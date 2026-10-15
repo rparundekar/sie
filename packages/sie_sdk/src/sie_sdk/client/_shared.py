@@ -51,6 +51,7 @@ _RESERVED_BASE_URL_HEADERS = frozenset(
         "trailer",
         "transfer-encoding",
         "upgrade",
+        "x-api-key",
         "x-sie-sdk-version",
     }
 )

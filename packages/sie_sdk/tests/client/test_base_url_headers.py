@@ -135,6 +135,7 @@ def test_sync_adversarial_ref_origins_stay_bare(ref: str) -> None:
         ({"TE": "trailers"}, ValueError),
         ({"Trailer": "X-Checksum"}, ValueError),
         ({"Upgrade": "websocket"}, ValueError),
+        ({"X-Api-Key": "edge-owned"}, ValueError),
         ({"Sec-WebSocket-Protocol": "edge-owned"}, ValueError),
         ({"X-Edge": 3}, TypeError),
     ],

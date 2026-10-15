@@ -183,10 +183,15 @@ that will change logs a warning naming 0.13.0.
 
 #### Release N: options and warnings
 
-Every new option keeps today's behaviour by default. The one exception is a
-security fix: `/ws/status` stops sending host identity at once, which changes
-the values of three response fields (see the `ServerInfo` item below). The
-fields keep their names and types, so clients that read them keep working.
+Every new option keeps today's behaviour by default, with three exceptions:
+
+- `/ws/status` stops sending host identity at once, a security fix that
+  changes the values of three response fields (see the `ServerInfo` item
+  below). The fields keep their names and types, so clients that read them
+  keep working.
+- A token-mode gateway refuses a request whose `Authorization` and `x-api-key`
+  carry different tokens (see the gateway items below).
+- The Python SDK's `base_url_headers` refuses `x-api-key`.
 
 - `sie-server serve`:
   - `--host` also reads `SIE_SERVER_HOST`. The default stays `0.0.0.0`.
@@ -212,9 +217,15 @@ fields keep their names and types, so clients that read them keep working.
   `SIE_SERVER_HOST` is unset.
 - Gateway:
   - Accepts `x-api-key` alongside `Authorization`. A request that sends both
-    must send the same token in each.
+    must send the same token in each. **Breaking for token-mode gateways:** a
+    request with a valid `Authorization` token and a different `x-api-key`,
+    for example a key that a proxy in front of the gateway adds for itself,
+    used to pass and now gets `401`. Remove `x-api-key` before the gateway, or
+    send the same token in both.
   - `SIE_WORKER_AUTH_TOKEN` is the token the gateway presents to workers.
   - Logs a warning when `SIE_AUTH_MODE` is unset on a non-loopback bind.
+- Python SDK: `base_url_headers` refuses `x-api-key`, as it refuses
+  `authorization`, so an edge header cannot contradict the SDK's token.
 - Telemetry: `SIE_TELEMETRY_ENABLED=1` opts in explicitly. The default stays on,
   with a notice at startup. Helm `telemetry.enabled: true` sets
   `SIE_TELEMETRY_ENABLED=1`.
